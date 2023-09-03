@@ -33,12 +33,6 @@ public:
                                      
 };
 
-/*
-    Comparator for priority_queue
-    * if two orders have the same price, then priority will be the tie-breaker
-    * if the orders are buy orders, then the order with the higher price will get higher priority
-    * if the orders are sell orders, then the order with the lower price will get lower priority
-*/
 struct Compare {
     bool operator() (Order ord1, Order ord2) {
         if(ord1.price == ord2.price) {
@@ -97,7 +91,7 @@ int main(void) {
 	    return 1;
 	}
 
-    // Auxilaries for file parsing
+    //  file parsing
     vector<string> row;
     string line, word, temp;   
 
