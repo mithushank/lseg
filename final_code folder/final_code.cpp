@@ -63,7 +63,7 @@ int main(void) {
     priority_queue<Order, vector<Order>, Compare> orchidBuy;
     priority_queue<Order, vector<Order>, Compare> orchidSell;
 
-    // abstraction of priority_queues
+    //  priority_queues for each instruments
     priority_queue<Order, vector<Order>, Compare>* rose[2] = {&roseBuy, &roseSell};
     priority_queue<Order, vector<Order>, Compare>* lavender[2] = {&lavenderBuy, &lavenderSell};
     priority_queue<Order, vector<Order>, Compare>* lotus[2] = {&lotusBuy, &lotusSell};
@@ -121,13 +121,10 @@ int main(void) {
             priority_queue<Order, vector<Order>, Compare>** ord_book = orderBooks[index];
 
             if(new_ord.side == 1) {
-                /* 
-                    If the sell side is not empty 
-                   and the most attractive sell order can fulfill the buyer's buy order 
-                */
+
                 while(!(ord_book[1]->empty()) && ((ord_book[1]->top()).price <= new_ord.price)) {
                     Order top= (ord_book[1]->top());
-                    if(new_ord.rem_qty == top.rem_qty) {             // most attractive sell order quantity = buy order quantity
+                    if(new_ord.rem_qty == top.rem_qty) {             // most favourable sell order quantity = buy order quantity
                         new_ord.status = 2;
                         top.status = 2;
                         new_ord.price = top.price;
@@ -137,7 +134,7 @@ int main(void) {
                         top.rem_qty = 0;
                         ord_book[1]->pop();
                         break;
-                    } else if(new_ord.rem_qty > top.rem_qty) {       // most attractive sell order quantity < buy order quantity
+                    } else if(new_ord.rem_qty > top.rem_qty) {       // most favourable sell order quantity < buy order quantity
                         double temp = new_ord.price;
                         new_ord.status = 3;
                         top.status = 2;
@@ -149,7 +146,7 @@ int main(void) {
                         top.rem_qty = 0;
                         new_ord.price = temp;
                         ord_book[1]->pop();
-                    } else {                                             // most attractive sell order quantity > buy order quantity
+                    } else {                                             // most favourable sell order quantity > buy order quantity
                         new_ord.status = 2;
                         top.status = 3;
                         new_ord.price = top.price;
@@ -164,25 +161,19 @@ int main(void) {
                     }
                 }
 
-                // Depicts a 'New' order being put into the order book
-                if(new_ord.status == 0) {
+                if(new_ord.status == 0) {    // new order directly put into orderbook
                     new_ord.execute(fout, new_ord.rem_qty);
                 }
-
-                // If the aggressive order is not fully executed, then put it into the order book 
-                if(new_ord.rem_qty > 0.0) {
+                if(new_ord.rem_qty > 0.0) {  // unfinished order put into orderbook
                     ord_book[0]->emplace(new_ord);
                 }
 
             // Sell Side
             } else if(new_ord.side == 2) {
-                /* 
-                    If the buy side is not empty 
-                    and the most attractive buy order can fulfill the seller's sell order
-                */
+
                 while(!(ord_book[0]->empty()) && ((ord_book[0]->top()).price >= new_ord.price)) {
                     Order top= ord_book[0]->top();
-                    if(new_ord.rem_qty == top.rem_qty) {                 // most attractive buy order quantity = sell order quantity
+                    if(new_ord.rem_qty == top.rem_qty) {                 // most favourable buy order quantity = sell order quantity
                         new_ord.status = 2;
                         top.status = 2;
                         new_ord.price = top.price; 
@@ -192,7 +183,7 @@ int main(void) {
                         top.rem_qty = 0;
                         ord_book[0]->pop();
                         break;
-                    } else if(new_ord.rem_qty > top.rem_qty) {           // most attractive buy order quantity < sell order quantity
+                    } else if(new_ord.rem_qty > top.rem_qty) {           // most favourable buy order quantity < sell order quantity
                         double temp2 = new_ord.price;
                         new_ord.status = 3;
                         top.status = 2;
@@ -203,7 +194,7 @@ int main(void) {
                         top.rem_qty = 0;
                         new_ord.price = temp2;
                         ord_book[0]->pop();
-                    } else {                                                        // most attractive buy order quantity > sell order quantity
+                    } else {                                                        // most favourable buy order quantity > sell order quantity
                         new_ord.status = 2;
                         top.status = 3;
                         new_ord.price = top.price;
